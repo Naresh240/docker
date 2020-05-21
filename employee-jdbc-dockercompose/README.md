@@ -5,7 +5,6 @@ Pre-requisites:
     - Install Maven
     - Install Docker
     - Install Docker-Compose
-    - Install Mysql
 Install Java:
 ------
     yum install java-1.8.0-openjdk-devel -y
@@ -36,36 +35,6 @@ Install Docker-Compose
     sudo chmod +x /usr/local/bin/docker-compose
     sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
     docker-compose --version
-Install Mysql:
------
-    wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
-    yum localinstall mysql57-community-release-el7-11.noarch.rpm -y
-    yum install mysql-community-server -y
-    systemctl start mysqld.service
-Here we get pwd
----
-    cat /var/log/mysqld.log
-Mysql Login
-----
-    mysql -u root -p
-Change password for root user:
---------
-    ALTER USER 'root'@'localhost' IDENTIFIED BY 'Naresh#240';
-Create User and Provide Remote access:
------------
-    create user 'naresh'@'localhost' IDENTIFIED BY 'Naresh#240';
-    GRANT ALL PRIVILEGES ON *.* TO 'naresh'@'localhost' WITH GRANT OPTION;
-    create user 'naresh'@'%' IDENTIFIED BY 'Naresh#240';
-    GRANT ALL PRIVILEGES ON *.* TO 'naresh'@'%' WITH GRANT OPTION;
-    FLUSH PRIVILEGES;
-Create Database in Mysql:
-------
-    CREATE DATABASE mysqldb;
-    USE mysqldb;
-Create Table:
------
-    create table employee(empId varchar(40), empName varchar(40));
-
 Clone code from github:
 -------
     git clone https://github.com/Naresh240/docker.git
@@ -82,6 +51,14 @@ Docker login
 Push docker image to dockerhub
 -----------
     docker push naresh240/employee-jdbc-dockercompose
+Check docker container:
+-----
+    docker ps 
+Connect to mysql container and Create employeee table:
+-------------
+    docker exec -it <containerid> /bin/bash
+    mysql -u naresh -p
+    create table employee(empId varchar(40), empName varchar(40));
 Deploy employee-jdbc application using docker run command:
 -----------
     docker-compose up -d
