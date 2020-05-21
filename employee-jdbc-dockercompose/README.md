@@ -14,17 +14,22 @@ Install Git:
     yum install git -y
 Install Apache-Maven:
 -------------
-	wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
-	tar xvzf apache-maven-3.6.3-bin.tar.gz
+    wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+    tar xvzf apache-maven-3.6.3-bin.tar.gz
+    
+    vi /etc/profile.d/maven.sh
+    --------------------------------------------
+    export MAVEN_HOME=/opt/apache-maven-3.6.3
+    export PATH=$PATH:$MAVEN_HOME/bin
+    --------------------------------------------
 	
-	vi /etc/profile.d/maven.sh
-	--------------------------------------------
-	export MAVEN_HOME=/opt/apache-maven-3.6.3
-	export PATH=$PATH:$MAVEN_HOME/bin
-	--------------------------------------------
-	
-	source /etc/profile.d/maven.sh
-	mvn -version
+    source /etc/profile.d/maven.sh
+    mvn -version
+
+Install Docker:
+------
+    yum install docker -y
+    service docker start
 Install Docker-Compose
 ------
     sudo curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
