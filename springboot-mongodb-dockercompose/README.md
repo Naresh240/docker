@@ -10,39 +10,29 @@ Pre-requisites:
 Clone Springboot-mongodb application:
 --------
   
-    git clone https://github.com/Naresh240/docker-compose.git
+    git clone https://github.com/Naresh240/docker.git
 
 Goto springboot-mongodb directory
     
-    cd springboot-mongodb
+    cd docker/springboot-mongodb-dockercompose
 Build artifact
 -------
-
     mvn clean install -DskipTests=true
  
 Build Docker Image
 -----
-  
     docker build -t naresh240/springboot-mongodb:latest .
-
 Docker login
 -----
-
     docker login -u naresh240 -p
- 
 Push Docker image to Dockerhub
 --------
-
     docker push naresh240/springboot-mongodb:latest
-    
 Deploy springboot-mongodb application using docker-compose
 ------------
-
     docker-compose up -d
-    
 Use postman app and Add Employee data
 ----------
-
 Check API: /addEmployee
 
     http://<ip-address>:8080/addEmployee
@@ -59,5 +49,4 @@ Goto Web UI and check below link
     
 To down our springboot-mongodb application
 -----------
-
     docker-compose down
