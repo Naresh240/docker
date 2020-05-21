@@ -1,123 +1,63 @@
-# Create External-DNS for Springboot Application
-
 Pre-requisites:
 -------
-
-  Installations:
-      -	git
-      -	Java
-      -	Maven
-      -	docker
-  EKS Cluster
-
-Attach below policy to Node Instance Role
------------
-
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "route53:ListHostedZones",
-                "route53:ListResourceRecordSets"
-            ],
-            "Resource": [
-                "*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "route53:ChangeResourceRecordSets"
-            ],
-            "Resource": [
-                "*"
-            ]
-        }
-    ]
-}
-
-Get Source Code from github:
----------------
-	https://github.com/Naresh240/employee-jdbc.git
-Build artifact by using below command:
-----------------
-	mvn clean install
-Create docker image:
-----------
-	docker build -t employee-jdbc .
-Docker login:
------------
-We need to login before push image to docker hub
-	docker login 
-Tag docker image:
+    - Install Git
+    - Install Maven
+    - Install Docker
+    - Install Mysql
+Install Mysql:
+-----
+    wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+    yum localinstall mysql57-community-release-el7-11.noarch.rpm -y
+    yum install mysql-community-server -y
+    systemctl start mysqld.service
+Here we get pwd
+---
+    cat /var/log/mysqld.log
+Mysql Login
+----
+    mysql -u root -p
+Change password for root user:
 --------
-	docker tag employee-jdbc naresh240/employee-jdbc
-push docker image to docker hub:
----------
-	docker push naresh240/employee-jdbc
-Creating the secrets:
----------
-You can create secrets manually from a literal or file using the kubectl create secret command, or you can create them from a generator using Kustomize.
-In this article, we’re gonna create the secrets manually:
-
-	kubectl create secret generic mysql-root-pass --from-literal=password=Naresh#240
-	kubectl create secret generic mysql-user-pass --from-literal=username=naresh --from-literal=password=Naresh#240
-	kubectl create secret generic mysql-db-url --from-literal=database=mysqldb --from-literal=url='jdbc:mysql://employee-jdbc-mysql:3306/mysqldb'
-You can check the secrets:
-------------
-	kubectl get secrets
-	kubectl describe secrets mysql-user-pass
-Deploying MySQL & PV:
+    ALTER USER 'root'@'localhost' IDENTIFIED BY 'Naresh#240';
+Create User and Provide Remote access:
 -----------
-	kubectl apply -f mysql-service.yml
-	kubectl apply -f mysql-deployment.yml
-	kubectl apply -f mysql-pv.yml
-	kubectl apply -f mysql-pv-claim.yml
-To check Persistent volumes and Persistentvolumeclaim:
+    create user 'naresh'@'localhost' IDENTIFIED BY 'Naresh#240';
+    GRANT ALL PRIVILEGES ON *.* TO 'naresh'@'localhost' WITH GRANT OPTION;
+    create user 'naresh'@'%' IDENTIFIED BY 'Naresh#240';
+    GRANT ALL PRIVILEGES ON *.* TO 'naresh'@'%' WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
+Create Database in Mysql:
+------
+    CREATE DATABASE mysqldb;
+    USE mysqldb;
+Create Table:
+-----
+    create table employee(empId varchar(40), empName varchar(40));
+
+Clone code from github:
+-------
+    git clone https://github.com/Naresh240/docker.git
+    cd docker/employee-jdbc-docker   
+Build Maven Artifact:
+-------
+    mvn clean install
+Build Docker image for Springboot Application
 --------------
-	kubectl get persistentvolumes
-	kubectl get persistentvolumeclaims
-Logging into the MySQL pod:
---------------
-You can get the MySQL pod and use kubectl exec command to login to the Pod.
-
-	kubectl get pods
-	kubectl exec -it employee-jdbc-mysql-74d88fd675-cbnbf -- /bin/bash
-Login in to mysql:
-
-	mysql -u naresh -p
-Change database to mysqldb:
-
-	use mysqldb;
-Create table with the name of employee:
-
-	create table employee(empId varchar(40), empName varchar(40));
-Now exit from pod:
-
-	exit
-Deploying the Spring Boot app on Kubernetes:
-----------------
-	kubectl apply -f employee-jdbc-deployment.yml
-	kubectl apply -f employee-jdbc-service.yml
-Deploying mandatory files for 
-----------
-	kubectl apply -f mandatory.yaml
-	kubectl apply -f patch-configmap-l4.yaml
-Create Certificates:
+    docker build -t naresh240/employee-jdbc-docker .
+Docker login
 -------------
-Create Certificates for our external-dns using AWS Certificate Manager
-
-Deploying externaldns, service and ingress:
-----------
-change our external dns in below yml files and certificate arn
-
-	kubectl apply -f external-dns.yaml
-	kubectl apply -f service-l4.yaml
-	kubectl apply -f ingress.yml
-Check output with External-dns with API:
-----------------
-	employee.naresh.com/employees
-
-
+    docker login
+Push docker image to dockerhub
+-----------
+    docker push naresh240/employee-jdbc-docker
+Deploy employee-jdbc application using docker run command:
+-----------
+    docker run --name employee-jdbc-docker -p 8080:8080 -d naresh240/employee-jdbc:latest
+POST Method you can check in POSTMAN App:
+-------
+    http://100.25.181.219:8080/insertemployee
+![1](https://user-images.githubusercontent.com/58024415/82552146-2ad55f80-9b7f-11ea-9526-89ea01e4fb6b.png)
+GET Method you can check in WebUI:
+---------
+    http://100.25.181.219:8080/employees
+![2](https://user-images.githubusercontent.com/58024415/82552150-2c068c80-9b7f-11ea-89d5-e93074704d92.png)
