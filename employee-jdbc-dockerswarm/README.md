@@ -1,123 +1,91 @@
-# Create External-DNS for Springboot Application
-
 Pre-requisites:
 -------
+Docker Swarm Master:
+    
+    - Install Java
+    - Install Git
+    - Install Maven
+    - Install Docker
+Docker Swarm Node server:
+    
+    - Install Docker
+How to Create Docker Swarm Cluster:
+-------
+Goto master server and give below command:
+    
+    docker swarm init
+Here we get token. This token we need to give in node servers
 
-  Installations:
-      -	git
-      -	Java
-      -	Maven
-      -	docker
-  EKS Cluster
-
-Attach below policy to Node Instance Role
------------
-
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "route53:ListHostedZones",
-                "route53:ListResourceRecordSets"
-            ],
-            "Resource": [
-                "*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "route53:ChangeResourceRecordSets"
-            ],
-            "Resource": [
-                "*"
-            ]
-        }
-    ]
-}
-
-Get Source Code from github:
----------------
-	https://github.com/Naresh240/employee-jdbc.git
-Build artifact by using below command:
-----------------
-	mvn clean install
-Create docker image:
-----------
-	docker build -t employee-jdbc .
-Docker login:
------------
-We need to login before push image to docker hub
-	docker login 
-Tag docker image:
---------
-	docker tag employee-jdbc naresh240/employee-jdbc
-push docker image to docker hub:
----------
-	docker push naresh240/employee-jdbc
-Creating the secrets:
----------
-You can create secrets manually from a literal or file using the kubectl create secret command, or you can create them from a generator using Kustomize.
-In this article, we’re gonna create the secrets manually:
-
-	kubectl create secret generic mysql-root-pass --from-literal=password=Naresh#240
-	kubectl create secret generic mysql-user-pass --from-literal=username=naresh --from-literal=password=Naresh#240
-	kubectl create secret generic mysql-db-url --from-literal=database=mysqldb --from-literal=url='jdbc:mysql://employee-jdbc-mysql:3306/mysqldb'
-You can check the secrets:
-------------
-	kubectl get secrets
-	kubectl describe secrets mysql-user-pass
-Deploying MySQL & PV:
------------
-	kubectl apply -f mysql-service.yml
-	kubectl apply -f mysql-deployment.yml
-	kubectl apply -f mysql-pv.yml
-	kubectl apply -f mysql-pv-claim.yml
-To check Persistent volumes and Persistentvolumeclaim:
---------------
-	kubectl get persistentvolumes
-	kubectl get persistentvolumeclaims
-Logging into the MySQL pod:
---------------
-You can get the MySQL pod and use kubectl exec command to login to the Pod.
-
-	kubectl get pods
-	kubectl exec -it employee-jdbc-mysql-74d88fd675-cbnbf -- /bin/bash
-Login in to mysql:
-
-	mysql -u naresh -p
-Change database to mysqldb:
-
-	use mysqldb;
-Create table with the name of employee:
-
-	create table employee(empId varchar(40), empName varchar(40));
-Now exit from pod:
-
-	exit
-Deploying the Spring Boot app on Kubernetes:
-----------------
-	kubectl apply -f employee-jdbc-deployment.yml
-	kubectl apply -f employee-jdbc-service.yml
-Deploying mandatory files for 
-----------
-	kubectl apply -f mandatory.yaml
-	kubectl apply -f patch-configmap-l4.yaml
-Create Certificates:
+Goto node server and give token which we get in master:
+	
+    docker swarm join --token SWMTKN-1-3f3587of2i73u16owsc8uly9ji0simkj36358dezuatged6fy7-cj2b280qw1yxr5yoheb9kemlu 172.31.80.230:2377
+Check nodes in Master server:
+	
+    docker node ls
+Install Java:
+------
+    yum install java-1.8.0-openjdk-devel -y
+Install Git:
+-------
+    yum install git -y
+Install Apache-Maven:
 -------------
-Create Certificates for our external-dns using AWS Certificate Manager
+    wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+    tar xvzf apache-maven-3.6.3-bin.tar.gz
+    
+    vi /etc/profile.d/maven.sh
+    --------------------------------------------
+    export MAVEN_HOME=/opt/apache-maven-3.6.3
+    export PATH=$PATH:$MAVEN_HOME/bin
+    --------------------------------------------
+	
+    source /etc/profile.d/maven.sh
+    mvn -version
 
-Deploying externaldns, service and ingress:
-----------
-change our external dns in below yml files and certificate arn
+Install Docker:
+------
+    yum install docker -y
+    service docker start
 
-	kubectl apply -f external-dns.yaml
-	kubectl apply -f service-l4.yaml
-	kubectl apply -f ingress.yml
-Check output with External-dns with API:
-----------------
-	employee.naresh.com/employees
-
-
+Clone code from github:
+-------
+    git clone https://github.com/Naresh240/docker.git
+    cd docker/employee-jdbc-dockerswarm  
+Build Maven Artifact:
+-------
+    mvn clean install
+Build Docker image for Springboot Application
+--------------
+    docker build -t naresh240/employee-jdbc-dockerswarm .
+Docker login
+-------------
+    docker login
+Push docker image to dockerhub
+-----------
+    docker push naresh240/employee-jdbc-dockerswarm
+Check docker container:
+-----
+    docker ps 
+Connect to mysql container and Create employeee table:
+-------------
+    docker exec -it <containerid> /bin/bash
+    mysql -u naresh -p
+    create table employee(empId varchar(40), empName varchar(40));
+Deploy employee-jdbc application on Master server:
+-----------
+    docker stack deploy --compose-file deploy-stack.yml employee-jdbc
+POST Method you can check in POSTMAN App:
+-------
+    http://100.25.181.219:8080/insertemployee
+![1](https://user-images.githubusercontent.com/58024415/82552146-2ad55f80-9b7f-11ea-9526-89ea01e4fb6b.png)
+GET Method you can check in WebUI(Using with Master Server):
+---------
+    http://100.25.181.219:8080/employees
+![2](https://user-images.githubusercontent.com/58024415/82552150-2c068c80-9b7f-11ea-89d5-e93074704d92.png)
+GET Method you can check in WebUI(Using with Node Server):
+---------
+    http://100.26.221.44:8080/employees
+![3](https://user-images.githubusercontent.com/58024415/82557071-9ff96280-9b88-11ea-852f-ce5b8dd1693f.png)
+CleanUP:
+------
+    docker stack rm employee-jdbc
