@@ -51,6 +51,9 @@ Docker login
 Push docker image to dockerhub
 -----------
     docker push naresh240/employee-jdbc-dockercompose
+Deploy employee-jdbc application using docker run command:
+-----------
+    docker-compose up -d
 Check docker container:
 -----
     docker ps 
@@ -59,9 +62,6 @@ Connect to mysql container and Create employeee table:
     docker exec -it <containerid> /bin/bash
     mysql -u naresh -p
     create table employee(empId varchar(40), empName varchar(40));
-Deploy employee-jdbc application using docker run command:
------------
-    docker-compose up -d
 POST Method you can check in POSTMAN App:
 -------
     http://100.25.181.219:8080/insertemployee
