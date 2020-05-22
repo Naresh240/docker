@@ -9,7 +9,7 @@ services:
       - mysqldb
   mysqldb:
     image: mysql:5.7
-    container_name: mysql_container
+    container_name: mysqldb
     ports:
       - 3306:3306
     environment:
