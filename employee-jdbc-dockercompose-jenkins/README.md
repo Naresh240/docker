@@ -61,6 +61,7 @@ Connect to mysql container and Create employeee table:
 -------------
     docker exec -it <containerid> /bin/bash
     mysql -u naresh -p
+    USE mysqldb;
     create table employee(empId varchar(40), empName varchar(40));
 POST Method you can check in POSTMAN App:
 -------
