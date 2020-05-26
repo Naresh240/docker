@@ -39,8 +39,8 @@ Goto WebUI and Check whether we get sonarqube or not:
 ![1](https://user-images.githubusercontent.com/58024415/82880366-f2a59680-9f5b-11ea-94ee-b12d5c342f7a.png)
 Credentials:
 --------
-Username: admin
-Password: admin
+    Username: admin
+    Password: admin
 CleanUP:
 ------
     docker-compose down
