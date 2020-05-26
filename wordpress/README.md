@@ -41,4 +41,6 @@ Provide details which it require
 Click on Install Wordpress
 ![4](https://user-images.githubusercontent.com/63221837/82870382-799f4280-9f4d-11ea-8f86-ff9eb0a4b0ee.png)
 Click on Log In
-
+![5](https://user-images.githubusercontent.com/58024415/82871412-26c68a80-9f4f-11ea-8041-1c47b42a6b74.png)
+Give Username and Password then click on LoginIn
+![6](https://user-images.githubusercontent.com/58024415/82871514-537aa200-9f4f-11ea-9260-defc79e50d1d.png)
