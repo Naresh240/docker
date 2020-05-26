@@ -37,7 +37,7 @@ Goto Web UI and check whether its working or not:
 ---------------
 ![2](https://user-images.githubusercontent.com/63221837/82870059-f4b42900-9f4c-11ea-991e-417828123aa4.png)
 Provide details which it require
-![3](https://user-images.githubusercontent.com/63221837/82870286-52e10c00-9f4d-11ea-83ad-ab0ccd48fe8a.png)
+![4](https://user-images.githubusercontent.com/58024415/82871299-fa127300-9f4e-11ea-8634-45cbdefc583b.png)
 Click on Install Wordpress
 ![4](https://user-images.githubusercontent.com/63221837/82870382-799f4280-9f4d-11ea-8f86-ff9eb0a4b0ee.png)
 Click on Log In
