@@ -1,15 +1,20 @@
 version: "3"
 services:
   employee-jdbc:
-    image: naresh240/employee-jdbc:latest
+    image: naresh240/employee-jdbc-docker:latest
     container_name: employee-jdbc
+    restart: always
     ports:
       - 8080:8080
-    links:
+    depends_on:
       - mysqldb
+
   mysqldb:
     image: mysql:5.7
     container_name: mysqldb
+    volumes:
+     - dbdata:/var/lib/mysql
+    restart: always
     ports:
       - 3306:3306
     environment:
@@ -18,3 +23,5 @@ services:
       - MYSQL_PASSWORD=Naresh#240
       - MYSQL_DATABASE=mysqldb
 
+volumes:
+  dbdata:
