@@ -1,7 +1,9 @@
 version: "3"
+
 services:
+
   employee-jdbc:
-    image: naresh240/employee-jdbc-docker:latest
+    image: naresh240/employee-jdbc-dockercompose:latest
     container_name: employee-jdbc
     restart: always
     ports:
